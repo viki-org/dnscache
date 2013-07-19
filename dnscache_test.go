@@ -2,6 +2,7 @@ package dnscache
 
 import (
   "net"
+  "sort"
   "time"
   "testing"
 )
@@ -69,9 +70,10 @@ func assertIps(t *testing.T, actuals []net.IP, expected []string) {
   if len(actuals) != len(expected) {
     t.Errorf("Expecting %d ips, got %d", len(expected), len(actuals))
   }
-  for i := 0; i < len(expected); i++ {
-    if actuals[i].String() != expected[i] {
-      t.Errorf("Expecting first ip to be %v, got %v", expected[i], actuals[0])
+  sort.Strings(expected)
+  for _, ip := range actuals {
+    if sort.SearchStrings(expected, ip.String()) == -1 {
+      t.Errorf("Got an unexpected ip: %v:", actuals[0])
     }
   }
 }

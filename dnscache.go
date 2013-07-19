@@ -1,4 +1,5 @@
 package dnscache
+// Package dnscache caches DNS lookups
 
 import (
   "net"
@@ -7,13 +8,12 @@ import (
 )
 
 type Resolver struct {
-  lock *sync.RWMutex
+  lock sync.RWMutex
   cache map[string][]net.IP
 }
 
-func New(refreshRate int) *Resolver {
+func New(refreshRate time.Duration) *Resolver {
   resolver := &Resolver {
-    lock: new(sync.RWMutex),
     cache: make(map[string][]net.IP, 64),
   }
   if refreshRate > 0 {
@@ -69,9 +69,9 @@ func (r *Resolver) Lookup(address string) ([]net.IP, error) {
   return ips, nil
 }
 
-func (r *Resolver) autoRefresh(rate int) {
+func (r *Resolver) autoRefresh(rate time.Duration) {
   for {
-    time.Sleep(time.Second * time.Duration(rate))
+    time.Sleep(rate)
     r.Refresh()
   }
 }
