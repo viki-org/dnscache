@@ -1,4 +1,4 @@
-### A DnsCache for Go
+### A DNS cache for Go
 CGO is used to lookup domain names. Given enough concurrent requests and the slightest hiccup in name resolution, it's quite easy to end up with blocked/leaking goroutines.
 
 The issue is documented at <https://code.google.com/p/go/issues/detail?id=5625>
