@@ -14,16 +14,16 @@ Install using the "go get" command:
 The cache is thread safe. Create a new instance by specifying how long each entry should be cached (in seconds). Items will be refreshed in the background.
 
     //refresh items every 5 minutes
-    resolver := dnscache.New(300)
+    resolver := dnscache.New(time.Minute * 5)
 
     //get an array of net.IP
     ips, _ := resolver.Fetch("api.viki.io")
 
     //get the first net.IP
-    ip, _ := resolver.Fetch("api.viki.io")
+    ip, _ := resolver.FetchOne("api.viki.io")
 
     //get the first net.IP as string
-    ip, _ := resolver.FetchString("api.viki.io")
+    ip, _ := resolver.FetchOneString("api.viki.io")
 
 If you are using an `http.Transport`, you can use this cache by speficifying a
 `Dial` function:
