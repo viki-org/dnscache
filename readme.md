@@ -32,7 +32,7 @@ If you are using an `http.Transport`, you can use this cache by speficifying a
       MaxIdleConnsPerHost: 64,
       Dial: func(network string, address string) (net.Conn, error) {
         separator := strings.LastIndex(address, ":")
-        ip, _ := dnscache.FetchString(address[:separator])
+        ip, _ := dnscache.FetchOneString(address[:separator])
         return net.Dial("tcp", ip + address[separator:])
       },
     }
