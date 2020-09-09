@@ -8,7 +8,7 @@ The Go team's singleflight solution (which isn't in stable yet) is rather elegan
 ### Installation
 Install using the "go get" command:
 
-    go get github.com/viki-org/dnscache
+    go get github.com/agrogov/dnscache
 
 ### Usage
 The cache is thread safe. Create a new instance by specifying how long each entry should be cached (in seconds). Items will be refreshed in the background.
@@ -30,9 +30,9 @@ If you are using an `http.Transport`, you can use this cache by speficifying a
 
     transport := &http.Transport {
       MaxIdleConnsPerHost: 64,
-      Dial: func(network string, address string) (net.Conn, error) {
+      DialContext: func(ctx context.Context, network string, address string) (net.Conn, error) {
         separator := strings.LastIndex(address, ":")
-        ip, _ := dnscache.FetchString(address[:separator])
-        return net.Dial("tcp", ip + address[separator:])
+      	ip, _ := resolver.FetchOneString(address[:separator])
+      	return net.Dial("tcp", ip+address[separator:])
       },
     }
