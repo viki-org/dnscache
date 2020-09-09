@@ -26,7 +26,7 @@ The cache is thread safe. Create a new instance by specifying how long each entr
     ip, _ := resolver.FetchOneString("api.viki.io")
 
 If you are using an `http.Transport`, you can use this cache by speficifying a
-`Dial` function:
+`DialContext` function:
 
     transport := &http.Transport {
       MaxIdleConnsPerHost: 64,
