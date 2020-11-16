@@ -76,7 +76,7 @@ func (r *Resolver) Refresh() {
 
 func (r *Resolver) Remove() {
 	r.lock.RLock()
-	r.cache = nil
+	r.cache = make(map[string]*ipaccess, 1)
 	r.lock.RUnlock()
 }
 
