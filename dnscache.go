@@ -58,7 +58,7 @@ func (r *Resolver) FetchOneString(address string) (string, error) {
 	return ip.String(), nil
 }
 
-func (r *Resolver) Refresh() {
+func (r *Resolver) RefreshAll() {
 	entries := make(map[string]*ipaccess, len(r.cache))
 	r.lock.RLock()
 	for k, v := range r.cache {
@@ -74,7 +74,16 @@ func (r *Resolver) Refresh() {
 	}
 }
 
-func (r *Resolver) Remove() {
+func (r *Resolver) RefreshOne(entry string) {
+	for k, _ := range r.cache {
+		if k == entry {
+			r.Lookup(k, false)
+			return
+		}
+	}
+}
+
+func (r *Resolver) RemoveAll() {
 	r.lock.RLock()
 	r.cache = make(map[string]*ipaccess, 1)
 	r.lock.RUnlock()
