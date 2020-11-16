@@ -75,8 +75,8 @@ func (r *Resolver) RefreshAll() {
 }
 
 func (r *Resolver) RefreshOne(entry string) {
-	for k, _ := range r.cache {
-		if k == entry {
+	for k, v := range r.cache {
+		if k == entry && v != nil && v.accessed {
 			r.Lookup(k, false)
 			return
 		}
