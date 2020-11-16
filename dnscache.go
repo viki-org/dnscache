@@ -107,6 +107,6 @@ func (r *Resolver) Lookup(address string, accessed bool) (*ipaccess, error) {
 func (r *Resolver) autoRefresh(rate time.Duration) {
 	for {
 		time.Sleep(rate)
-		r.Refresh()
+		r.RefreshAll()
 	}
 }
