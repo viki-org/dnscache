@@ -16,6 +16,12 @@ The cache is thread safe. Create a new instance by specifying how long each entr
     //refresh items every 5 minutes
     resolver := dnscache.New(time.Minute * 5)
 
+    //refresh all items immediately
+    resolver.RefreshAll()
+
+    //refresh exact item immediately
+    resolver.RefreshOne("api.viki.io")
+
     //get an array of net.IP
     ips, _ := resolver.Fetch("api.viki.io")
 
@@ -24,6 +30,9 @@ The cache is thread safe. Create a new instance by specifying how long each entr
 
     //get the first net.IP as string
     ip, _ := resolver.FetchOneString("api.viki.io")
+
+    //remove all items immediately
+    resolver.RemoveAll()
 
 If you are using an `http.Transport`, you can use this cache by speficifying a
 `DialContext` function:
