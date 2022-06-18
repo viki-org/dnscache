@@ -8,9 +8,12 @@ import (
 	"time"
 )
 
+var LookupFunc = net.LookupIP
+
 type Resolver struct {
-	lock  sync.RWMutex
-	cache map[string][]net.IP
+	lock       sync.RWMutex
+	cache      map[string][]net.IP
+	LookupFunc func(host string) ([]net.IP, error)
 }
 
 func New(refreshRate time.Duration) *Resolver {
@@ -67,7 +70,7 @@ func (r *Resolver) Refresh() {
 }
 
 func (r *Resolver) Lookup(address string) ([]net.IP, error) {
-	ips, err := net.LookupIP(address)
+	ips, err := LookupFunc(address)
 	if err != nil {
 		return nil, err
 	}

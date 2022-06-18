@@ -7,6 +7,16 @@ import (
 	"time"
 )
 
+var testIpList = []string{"1.123.58.14", "31.85.32.110"}
+var testLookupFunc = func(host string) ([]net.IP, error) {
+	var ips []net.IP
+	for i := 0; i < len(testIpList); i += 1 {
+		ip := net.ParseIP(testIpList[i])
+		ips = append(ips, ip)
+	}
+	return ips, nil
+}
+
 func TestFetchReturnsAndErrorOnInvalidLookup(t *testing.T) {
 	ips, err := New(0).Lookup("invalid.viki.io")
 	if ips != nil {
@@ -19,14 +29,18 @@ func TestFetchReturnsAndErrorOnInvalidLookup(t *testing.T) {
 }
 
 func TestFetchReturnsAListOfIps(t *testing.T) {
+	LookupFunc = testLookupFunc
 	ips, _ := New(0).Lookup("dnscache.go.test.viki.io")
-	assertIps(t, ips, []string{"1.123.58.13", "31.85.32.110"})
+	assertIps(t, ips, testIpList)
+	LookupFunc = net.LookupIP
 }
 
 func TestCallingLookupAddsTheItemToTheCache(t *testing.T) {
+	LookupFunc = testLookupFunc
 	r := New(0)
 	r.Lookup("dnscache.go.test.viki.io")
-	assertIps(t, r.cache["dnscache.go.test.viki.io"], []string{"1.123.58.13", "31.85.32.110"})
+	assertIps(t, r.cache["dnscache.go.test.viki.io"], testIpList)
+	LookupFunc = net.LookupIP
 }
 
 func TestFetchLoadsValueFromTheCache(t *testing.T) {
@@ -37,10 +51,12 @@ func TestFetchLoadsValueFromTheCache(t *testing.T) {
 }
 
 func TestFetchOneLoadsTheFirstValue(t *testing.T) {
+	LookupFunc = testLookupFunc
 	r := New(0)
 	r.cache["something.viki.io"] = []net.IP{net.ParseIP("1.1.2.3"), net.ParseIP("100.100.102.103")}
 	ip, _ := r.FetchOne("something.viki.io")
 	assertIps(t, []net.IP{ip}, []string{"1.1.2.3"})
+	LookupFunc = net.LookupIP
 }
 
 func TestFetchOneStringLoadsTheFirstValue(t *testing.T) {
@@ -53,17 +69,21 @@ func TestFetchOneStringLoadsTheFirstValue(t *testing.T) {
 }
 
 func TestFetchLoadsTheIpAndCachesIt(t *testing.T) {
+	LookupFunc = testLookupFunc
 	r := New(0)
 	ips, _ := r.Fetch("dnscache.go.test.viki.io")
-	assertIps(t, ips, []string{"1.123.58.13", "31.85.32.110"})
-	assertIps(t, r.cache["dnscache.go.test.viki.io"], []string{"1.123.58.13", "31.85.32.110"})
+	assertIps(t, ips, testIpList)
+	assertIps(t, r.cache["dnscache.go.test.viki.io"], testIpList)
+	LookupFunc = net.LookupIP
 }
 
 func TestItReloadsTheIpsAtAGivenInterval(t *testing.T) {
+	LookupFunc = testLookupFunc
 	r := New(1)
 	r.cache["dnscache.go.test.viki.io"] = nil
 	time.Sleep(time.Second * 2)
-	assertIps(t, r.cache["dnscache.go.test.viki.io"], []string{"1.123.58.13", "31.85.32.110"})
+	assertIps(t, r.cache["dnscache.go.test.viki.io"], testIpList)
+	LookupFunc = net.LookupIP
 }
 
 func assertIps(t *testing.T, actuals []net.IP, expected []string) {
